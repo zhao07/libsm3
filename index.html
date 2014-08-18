@@ -29,32 +29,90 @@
       <div class="inner clearfix">
         <section id="main-content">
           <h1>
-<a name="libsm3" class="anchor" href="#libsm3"><span class="octicon octicon-link"></span></a>libsm3</h1>
+<a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h1>
 
-<h2>
-<a name="about" class="anchor" href="#about"><span class="octicon octicon-link"></span></a>About</h2>
+<p>SM3 Cryptographic Hash Algorithm is a chinese national cryptographic hash
+algorithm standard published by the State Cryptography Administration Office 
+of Security Commercial Code Administration (OSCCA) of China in December 2010.
+A draft of this algorithm can be found at</p>
 
-<p>This project provides a C library of SM3 digest algorithm. SM3 is a
-cryptographic digest algorithm published by Chinese Commercial Cryptographic
-Administration Office on Dec 2010.</p>
+<p><a href="http://tools.ietf.org/html/draft-shen-sm3-hash-00" title="RFC Draft">http://tools.ietf.org/html/draft-shen-sm3-hash-00</a></p>
 
-<p>A draft of this algorithm can be found at:</p>
+<p>The SM3 take input messages as 512 bits blocks and generates
+256 bits digest values, same as SHA-256.</p>
 
-<p><a href="http://tools.ietf.org/html/draft-shen-sm3-hash-00">http://tools.ietf.org/html/draft-shen-sm3-hash-00</a></p>
+<p>This project provides an open source C implementation of SM3 hash
+algorithm. The project includes a library with init, update, final style of
+interfaces and an command line tool.</p>
 
-<p>This library is maintained by Zhi Guan <a href="mailto:guan@pku.edu.cn">guan@pku.edu.cn</a> and Zilong Cui.
-It also provides a command line tool <code>sm3' and a test</code>sm3test'.</p>
+<h1>
+<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h1>
 
-<h2>
-<a name="install" class="anchor" href="#install"><span class="octicon octicon-link"></span></a>Install</h2>
+<pre><code>./configure
+make
+sudo make install
+</code></pre>
 
-<p>$ ./configure
-  $ make
-  $ sudo make install</p>
+<p>Try the command line tool</p>
 
-<p>If the new installed `sm3' command line can not find .so, run:</p>
+<pre><code>echo -n abc | sm3
+66c7f0f462eeedd9d1f2d46bdc10e4e24167c4875cf2f7a2297da02b8f4ba8e0
+</code></pre>
 
-<p>$ sudo ldconfig -v</p>
+<p>If libsm3.so can not be found on Linux, run</p>
+
+<pre><code>sudo ldconfig -v
+</code></pre>
+
+<h1>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
+
+<p>The libsm3 library provides the following C API:</p>
+
+<pre><code>void sm3_init(sm3_ctx_t *ctx);
+void sm3_update(sm3_ctx_t *ctx, const unsigned char* data, size_t data_len);
+void sm3_final(sm3_ctx_t *ctx, unsigned char digest[SM3_DIGEST_LENGTH]);
+void sm3_compress(uint32_t digest[8], const unsigned char block[SM3_BLOCK_SIZE]);
+void sm3(const unsigned char *data, size_t datalen, unsigned char digest[SM3_DIGEST_LENGTH]);
+
+void hmac_sm3_init(hmac_sm3_ctx_t *ctx, const unsigned char *key, size_t key_len);
+void hmac_sm3_update(hmac_sm3_ctx_t *ctx, const unsigned char *data, size_t data_len);
+void hmac_sm3_final(hmac_sm3_ctx_t *ctx, unsigned char mac[HMAC_SM3_MAC_SIZE]);
+void hmac_sm3(const unsigned char *data, size_t data_len,
+    const unsigned char *key, size_t key_len, unsigned char mac[HMAC_SM3_MAC_SIZE]);
+</code></pre>
+
+<p>Example on using C API to digest a message:</p>
+
+<pre><code>unsigend char buffer[SM3_DIGEST_LENGTH];
+sm3("hello", strlen("hello"), buffer);
+</code></pre>
+
+<p>Example on using C API to digest a stream:</p>
+
+<pre><code>unsigned char dgst[SM3_DIGEST_LENGTH];
+sm3_ctx_t ctx;
+sm3_init(&amp;ctx);
+sm3_update(&amp;ctx, "hello", strlen("hello"));
+sm3_update(&amp;ctx, "world", strlen("world"));
+sm3_final(&amp;ctx, dgst);
+</code></pre>
+
+<p>Example on using C API to generate a HMAC tag:</p>
+
+<pre><code>unsigned char mac[HMAC_SM3_MAC_SIZE];
+hmac_sm3_ctx_t ctx;
+unsigned char key[16];
+hmac_sm3_init(&amp;ctx, key, sizeof(key));
+hmac_sm3_update(&amp;ctx, "hello", strlen("hello"));
+hmac_sm3_update(&amp;ctx, "world", strlen("world"));
+hmac_sm3_final(&amp;ctx, mac);
+</code></pre>
+
+<h1>
+<a name="benchmark" class="anchor" href="#benchmark"><span class="octicon octicon-link"></span></a>Benchmark</h1>
+
+<p>To be add ...</p>
         </section>
 
         <aside id="sidebar">
