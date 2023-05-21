@@ -5,8 +5,12 @@
 #define SM3_BLOCK_SIZE		64
 
 #include <sys/types.h>
-#include <stdint.h>
 #include <string.h>
+#ifndef WIN32
+#include <stdint.h>
+#else
+typedef unsigned int uint32_t;
+#endif
 
 #ifdef __cplusplus
 extern "C" {
